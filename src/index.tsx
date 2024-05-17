@@ -17,6 +17,15 @@ const Mtls = NativeModules.Mtls
       }
     );
 
-export function multiply(a: number, b: number): Promise<number> {
-  return Mtls.multiply(a, b);
+export function setup(privateKey: string, baseUrl: string): Promise<boolean> {
+  return Mtls.setup(privateKey, baseUrl);
+}
+
+export function makeRequest(
+  path: string,
+  method: string,
+  headers: { [key: string]: any },
+  params: { [key: string]: any }
+) {
+  return Mtls.makeRequest(path, method, headers, params);
 }
