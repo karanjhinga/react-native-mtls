@@ -11,6 +11,7 @@ buildscript {
     classpath "com.android.tools.build:gradle:7.2.1"
     // noinspection DifferentKotlinGradleVersion
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
   }
 }
 
@@ -20,6 +21,7 @@ def isNewArchitectureEnabled() {
 
 apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
+apply plugin: 'kotlinx-serialization'
 
 if (isNewArchitectureEnabled()) {
   apply plugin: "com.facebook.react"
@@ -90,5 +92,9 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+  implementation("io.ktor:ktor-client-core:2.3.11")
+  implementation("io.ktor:ktor-client-okhttp:2.3.11")
+  implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.11")
 }
 
