@@ -59,7 +59,7 @@ class MtlsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaMo
 
       try {
         val apiResponse = networkingClient.makeRequest(
-          path, method, headers.toHashMap(), params.toHashMap(), body.toJsonElement()
+          path, method, headers.toHashMap(), params.toHashMap(), body.toHashMap().toJsonElement()
         )
 
         if (BuildConfig.DEBUG) {
