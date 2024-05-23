@@ -5,8 +5,11 @@ import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.headers
 import io.ktor.client.request.request
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
+import io.ktor.http.contentType
 import io.ktor.http.parameters
 import io.ktor.http.path
 import okhttp3.OkHttpClient
@@ -83,14 +86,18 @@ class NetworkingClient(
   private var client = HttpClient(OkHttp.create {
     preconfigured = okHttpClient
   }) {
-    defaultRequest { url(baseUrl) }
+    defaultRequest {
+      url(baseUrl)
+      contentType(ContentType.Application.Json)
+    }
   }
 
   suspend fun makeRequest(
     path: String,
     method: String,
     headers: Map<String, Any> = emptyMap(),
-    params: Map<String, Any> = emptyMap()
+    params: Map<String, Any> = emptyMap(),
+    body: Map<String, Any> = emptyMap()
   ): HttpResponse {
     return client.request {
 
@@ -107,6 +114,8 @@ class NetworkingClient(
           append(key, value.toString())
         }
       }
+
+      setBody(body)
 
       url {
         path(path)

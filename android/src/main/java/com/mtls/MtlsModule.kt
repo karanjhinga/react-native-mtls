@@ -31,7 +31,12 @@ class MtlsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaMo
   @OptIn(DelicateCoroutinesApi::class)
   @ReactMethod
   fun makeRequest(
-    path: String, method: String, headers: ReadableMap, params: ReadableMap, promise: Promise
+    path: String,
+    method: String,
+    headers: ReadableMap,
+    params: ReadableMap,
+    body: ReadableMap,
+    promise: Promise
   ) {
 
     val networkingClient = networkingClient
@@ -43,7 +48,7 @@ class MtlsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaMo
 
       try {
         val apiResponse = networkingClient.makeRequest(
-          path, method, headers.toHashMap(), params.toHashMap()
+          path, method, headers.toHashMap(), params.toHashMap(), body.toHashMap()
         )
 
         response = NetworkResponse(

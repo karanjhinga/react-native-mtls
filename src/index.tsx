@@ -21,11 +21,18 @@ export function setup(privateKey: string, baseUrl: string): Promise<boolean> {
   return Mtls.setup(privateKey, baseUrl);
 }
 
+export interface MtlsResponse {
+  kind: 'ok' | 'cannot-connect' | 'unknown';
+  status?: number;
+  body?: string;
+}
+
 export function makeRequest(
   path: string,
   method: string,
   headers: { [key: string]: any },
-  params: { [key: string]: any }
-) {
-  return Mtls.makeRequest(path, method, headers, params);
+  params: { [key: string]: any },
+  body: { [key: string]: any }
+): MtlsResponse {
+  return Mtls.makeRequest(path, method, headers, params, body);
 }
