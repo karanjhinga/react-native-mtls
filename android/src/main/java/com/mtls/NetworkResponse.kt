@@ -13,6 +13,6 @@ class NetworkResponse(
 ) {
 
   override fun toString(): String {
-    return Json.encodeToString(this)
+    return jsonInstance.encodeToString(this)
   }
 }

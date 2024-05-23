@@ -2,6 +2,7 @@ package com.mtls
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.headers
 import io.ktor.client.request.request
@@ -12,6 +13,8 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.contentType
 import io.ktor.http.parameters
 import io.ktor.http.path
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import okhttp3.OkHttpClient
@@ -28,6 +31,11 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
+
+val jsonInstance = Json {
+  ignoreUnknownKeys = true
+  explicitNulls = false
+}
 
 class NetworkingClient(
   certificateInputStream: InputStream,
@@ -88,6 +96,9 @@ class NetworkingClient(
   private var client = HttpClient(OkHttp.create {
     preconfigured = okHttpClient
   }) {
+    install(ContentNegotiation) {
+      json(jsonInstance)
+    }
     defaultRequest {
       url(baseUrl)
       contentType(ContentType.Application.Json)

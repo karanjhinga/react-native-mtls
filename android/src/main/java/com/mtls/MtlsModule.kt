@@ -95,10 +95,10 @@ class MtlsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaMo
     is Array<*> -> JsonArray(map { it.toJsonElement() })
     is List<*> -> JsonArray(map { it.toJsonElement() })
     is Map<*, *> -> JsonObject(map { it.key.toString() to it.value.toJsonElement() }.toMap())
-    else -> Json.encodeToJsonElement(serializer(this::class.createType()), this)
+    else -> jsonInstance.encodeToJsonElement(serializer(this::class.createType()), this)
   }
 
-  fun Any?.toJsonString(): String = Json.encodeToString(this.toJsonElement())
+  fun Any?.toJsonString(): String = jsonInstance.encodeToString(this.toJsonElement())
 
   companion object {
     const val NAME = "Mtls"

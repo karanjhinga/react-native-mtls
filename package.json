@@ -1,6 +1,6 @@
 {
   "name": "react-native-mtls",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Networking library for react native with mtls support",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
