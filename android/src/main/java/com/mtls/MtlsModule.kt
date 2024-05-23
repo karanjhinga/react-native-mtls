@@ -1,5 +1,6 @@
 package com.mtls
 
+import android.util.Log
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -51,12 +52,19 @@ class MtlsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaMo
           path, method, headers.toHashMap(), params.toHashMap(), body.toHashMap()
         )
 
+        if(BuildConfig.DEBUG){
+          Log.d("ReactNativeMtls", "response = $apiResponse")
+        }
+
         response = NetworkResponse(
           "ok",
           apiResponse.status.value,
           apiResponse.bodyAsText().ifBlank { "{}" }
         )
       } catch (e: Exception) {
+        if(BuildConfig.DEBUG){
+          Log.d("ReactNativeMtls", "exception = ${e.message}", e)
+        }
         if (e is IOException) {
           response = NetworkResponse("cannot-connect", null, null)
         }

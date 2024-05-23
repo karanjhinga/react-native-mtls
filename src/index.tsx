@@ -33,6 +33,6 @@ export function makeRequest(
   headers: { [key: string]: any },
   params: { [key: string]: any },
   body: { [key: string]: any }
-): MtlsResponse {
+): Promise<MtlsResponse> {
   return Mtls.makeRequest(path, method, headers, params, body);
 }
