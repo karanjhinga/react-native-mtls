@@ -68,7 +68,7 @@ class MtlsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaMo
         response = JsonObject(
           mapOf(
             "kind" to "ok".toJsonElement(),
-            "status" to apiResponse.status.toJsonElement(),
+            "status" to apiResponse.status.value.toJsonElement(),
             "body" to jsonInstance.parseToJsonElement(apiResponse.bodyAsText())
           )
         )
@@ -83,10 +83,11 @@ class MtlsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaMo
         }
       }
 
+      response = response ?: JsonObject(
+        mapOf("kind" to "unknown".toJsonElement())
+      )
       promise.resolve(
-        (response ?: JsonObject(
-          mapOf("kind" to "unknown".toJsonElement())
-        ))
+        response.toJsonString()
       )
     }
   }

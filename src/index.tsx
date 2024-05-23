@@ -27,12 +27,13 @@ export interface MtlsResponse {
   body?: string;
 }
 
-export function makeRequest(
+export async function makeRequest(
   path: string,
   method: string,
   headers: { [key: string]: any },
   params: { [key: string]: any },
   body: { [key: string]: any }
 ): Promise<MtlsResponse> {
-  return JSON.parse(Mtls.makeRequest(path, method, headers, params, body));
+  const resp = await Mtls.makeRequest(path, method, headers, params, body);
+  return JSON.parse(resp);
 }
