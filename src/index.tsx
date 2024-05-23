@@ -34,5 +34,5 @@ export function makeRequest(
   params: { [key: string]: any },
   body: { [key: string]: any }
 ): Promise<MtlsResponse> {
-  return Mtls.makeRequest(path, method, headers, params, body);
+  return JSON.parse(Mtls.makeRequest(path, method, headers, params, body));
 }
