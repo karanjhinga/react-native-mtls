@@ -12,7 +12,6 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
@@ -55,7 +54,7 @@ class MtlsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaMo
 
     GlobalScope.launch(IO) {
 
-      var response: NetworkResponse? = null
+      var response: JsonObject? = null
 
       try {
         val apiResponse = networkingClient.makeRequest(
@@ -66,22 +65,28 @@ class MtlsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaMo
           Log.d("ReactNativeMtls", "response = $apiResponse")
         }
 
-        response = NetworkResponse(
-          "ok",
-          apiResponse.status.value,
-          apiResponse.bodyAsText().ifBlank { "{}" }
+        response = JsonObject(
+          mapOf(
+            "kind" to "ok".toJsonElement(),
+            "status" to apiResponse.status.toJsonElement(),
+            "body" to jsonInstance.parseToJsonElement(apiResponse.bodyAsText())
+          )
         )
       } catch (e: Exception) {
         if (BuildConfig.DEBUG) {
           Log.d("ReactNativeMtls", "exception = ${e.message}", e)
         }
         if (e is IOException) {
-          response = NetworkResponse("cannot-connect", null, null)
+          response = JsonObject(
+            mapOf("kind" to "cannot-connect".toJsonElement())
+          )
         }
       }
 
       promise.resolve(
-        (response ?: NetworkResponse("unknown", null, null)).toString()
+        (response ?: JsonObject(
+          mapOf("kind" to "unknown".toJsonElement())
+        ))
       )
     }
   }
