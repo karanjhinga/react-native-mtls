@@ -11,7 +11,17 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.serializer
 import okio.IOException
+import kotlin.reflect.full.createType
+
 
 class MtlsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
@@ -49,10 +59,10 @@ class MtlsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaMo
 
       try {
         val apiResponse = networkingClient.makeRequest(
-          path, method, headers.toHashMap(), params.toHashMap(), body.toHashMap()
+          path, method, headers.toHashMap(), params.toHashMap(), body.toJsonElement()
         )
 
-        if(BuildConfig.DEBUG){
+        if (BuildConfig.DEBUG) {
           Log.d("ReactNativeMtls", "response = $apiResponse")
         }
 
@@ -62,7 +72,7 @@ class MtlsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaMo
           apiResponse.bodyAsText().ifBlank { "{}" }
         )
       } catch (e: Exception) {
-        if(BuildConfig.DEBUG){
+        if (BuildConfig.DEBUG) {
           Log.d("ReactNativeMtls", "exception = ${e.message}", e)
         }
         if (e is IOException) {
@@ -75,6 +85,20 @@ class MtlsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaMo
       )
     }
   }
+
+  private fun Any?.toJsonElement(): JsonElement = when (this) {
+    null -> JsonNull
+    is JsonElement -> this
+    is Number -> JsonPrimitive(this)
+    is Boolean -> JsonPrimitive(this)
+    is String -> JsonPrimitive(this)
+    is Array<*> -> JsonArray(map { it.toJsonElement() })
+    is List<*> -> JsonArray(map { it.toJsonElement() })
+    is Map<*, *> -> JsonObject(map { it.key.toString() to it.value.toJsonElement() }.toMap())
+    else -> Json.encodeToJsonElement(serializer(this::class.createType()), this)
+  }
+
+  fun Any?.toJsonString(): String = Json.encodeToString(this.toJsonElement())
 
   companion object {
     const val NAME = "Mtls"

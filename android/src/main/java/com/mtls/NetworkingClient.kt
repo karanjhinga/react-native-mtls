@@ -12,6 +12,8 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.contentType
 import io.ktor.http.parameters
 import io.ktor.http.path
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 import okhttp3.OkHttpClient
 import java.io.InputStream
 import java.security.KeyFactory
@@ -97,7 +99,7 @@ class NetworkingClient(
     method: String,
     headers: Map<String, Any> = emptyMap(),
     params: Map<String, Any> = emptyMap(),
-    body: Map<String, Any> = emptyMap()
+    body: JsonElement
   ): HttpResponse {
     return client.request {
 
