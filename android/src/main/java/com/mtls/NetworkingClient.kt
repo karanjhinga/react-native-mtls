@@ -181,9 +181,9 @@ class NetworkingClient(
 
       url {
         path(path)
-        params.forEach { (key, value) ->
-          parameter(key, value)
-        }
+      }
+      params.forEach { (key, value) ->
+        parameter(key, value)
       }
     }
   }
