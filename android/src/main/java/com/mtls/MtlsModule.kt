@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
 import io.ktor.client.statement.bodyAsText
+import io.ktor.client.statement.request
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.GlobalScope
@@ -62,7 +63,7 @@ class MtlsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaMo
         )
 
         if (BuildConfig.DEBUG) {
-          Log.d("ReactNativeMtls", "response = $apiResponse")
+          Log.d("ReactNativeMtls", "responseUrl = ${apiResponse.request.url}, status=${apiResponse.status.value}")
         }
 
         response = JsonObject(
