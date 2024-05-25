@@ -9,6 +9,7 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitFormWithBinaryData
 import io.ktor.client.request.headers
+import io.ktor.client.request.parameter
 import io.ktor.client.request.request
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
@@ -180,10 +181,8 @@ class NetworkingClient(
 
       url {
         path(path)
-        parameters {
-          params.forEach { (key, value) ->
-            append(key, value.toString())
-          }
+        params.forEach { (key, value) ->
+          parameter(key, value)
         }
       }
     }
