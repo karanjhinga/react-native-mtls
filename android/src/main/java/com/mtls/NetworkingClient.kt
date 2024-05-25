@@ -131,16 +131,15 @@ class NetworkingClient(
         }
       }
 
-      parameters {
-        params.forEach { (key, value) ->
-          append(key, value.toString())
-        }
-      }
-
       setBody(body)
 
       url {
         path(path)
+        parameters {
+          params.forEach { (key, value) ->
+            append(key, value.toString())
+          }
+        }
       }
     }
   }
@@ -179,13 +178,13 @@ class NetworkingClient(
         }
       }
 
-      parameters {
-        params.forEach { (key, value) ->
-          append(key, value.toString())
-        }
-      }
       url {
         path(path)
+        parameters {
+          params.forEach { (key, value) ->
+            append(key, value.toString())
+          }
+        }
       }
     }
   }
