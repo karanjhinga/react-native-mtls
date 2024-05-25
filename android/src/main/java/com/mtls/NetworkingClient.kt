@@ -136,10 +136,8 @@ class NetworkingClient(
 
       url {
         path(path)
-        parameters {
-          params.forEach { (key, value) ->
-            append(key, value.toString())
-          }
+        params.forEach { (key, value) ->
+          parameter(key, value)
         }
       }
     }
@@ -181,9 +179,9 @@ class NetworkingClient(
 
       url {
         path(path)
-      }
-      params.forEach { (key, value) ->
-        parameter(key, value)
+        params.forEach { (key, value) ->
+          parameter(key, value)
+        }
       }
     }
   }
