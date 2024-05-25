@@ -1,6 +1,7 @@
 package com.mtls
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.core.net.toUri
 import io.ktor.client.HttpClient
@@ -163,7 +164,7 @@ class NetworkingClient(
       }
     }
 
-    val iStream = context.contentResolver.openInputStream(filePath.toUri())!!
+    val iStream = context.contentResolver.openInputStream(Uri.parse(filePath))!!
     val inputData: ByteArray = getBytes(iStream)
 
     iStream.close()
