@@ -156,6 +156,7 @@ class MtlsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaMo
   private fun Any?.toJsonElement(): JsonElement = when (this) {
     null -> JsonNull
     is JsonElement -> this
+    is Int -> JsonPrimitive(this)
     is Number -> JsonPrimitive(this)
     is Boolean -> JsonPrimitive(this)
     is String -> JsonPrimitive(this)
