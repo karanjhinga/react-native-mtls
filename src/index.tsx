@@ -37,3 +37,24 @@ export async function makeRequest(
   const resp = await Mtls.makeRequest(path, method, headers, params, body);
   return JSON.parse(resp);
 }
+
+export async function multipart(
+  path: string,
+  headers: { [key: string]: any },
+  params: { [key: string]: any },
+  body: { [key: string]: any },
+  fileName: string,
+  filePath: string,
+  fileHeaders: { [key: string]: string }
+): Promise<MtlsResponse> {
+  const resp = await Mtls.multipart(
+    path,
+    headers,
+    params,
+    body,
+    fileName,
+    filePath,
+    fileHeaders
+  );
+  return JSON.parse(resp);
+}

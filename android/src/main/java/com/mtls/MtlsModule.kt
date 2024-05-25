@@ -33,7 +33,7 @@ class MtlsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaMo
   @ReactMethod
   fun setup(privateKey: String, baseUrl: String, promise: Promise) {
     networkingClient = NetworkingClient(
-      reactApplicationContext.assets.open(PUBLIC_CERT_FILE_NAME), privateKey, baseUrl
+      reactApplicationContext.assets.open(PUBLIC_CERT_FILE_NAME), privateKey, baseUrl, reactApplicationContext
     )
     promise.resolve(true)
   }
@@ -59,6 +59,66 @@ class MtlsModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaMo
       try {
         val apiResponse = networkingClient.makeRequest(
           path, method, headers.toHashMap(), params.toHashMap(), body.toHashMap().toJsonElement()
+        )
+
+        if (BuildConfig.DEBUG) {
+          Log.d("ReactNativeMtls", "response = $apiResponse")
+        }
+
+        response = JsonObject(
+          mapOf(
+            "kind" to "ok".toJsonElement(),
+            "status" to apiResponse.status.value.toJsonElement(),
+            "body" to jsonInstance.parseToJsonElement(apiResponse.bodyAsText())
+          )
+        )
+      } catch (e: Exception) {
+        if (BuildConfig.DEBUG) {
+          Log.d("ReactNativeMtls", "exception = ${e.message}", e)
+        }
+        if (e is IOException) {
+          response = JsonObject(
+            mapOf("kind" to "cannot-connect".toJsonElement())
+          )
+        }
+      }
+
+      response = response ?: JsonObject(
+        mapOf("kind" to "unknown".toJsonElement())
+      )
+      promise.resolve(
+        response.toJsonString()
+      )
+    }
+  }
+
+  @ReactMethod
+  fun multipart(
+    path: String,
+    headers: ReadableMap,
+    params: ReadableMap,
+    body: ReadableMap,
+    fileName: String,
+    filePath: String,
+    fileHeaders: ReadableMap,
+    promise: Promise
+  ) {
+    val networkingClient = networkingClient
+      ?: throw IllegalStateException("networking client must be created before a network request can be initiated")
+
+    GlobalScope.launch(IO) {
+
+      var response: JsonObject? = null
+
+      try {
+        val apiResponse = networkingClient.multipart(
+          path,
+          headers.toHashMap(),
+          params.toHashMap(),
+          body.toHashMap(),
+          fileName,
+          filePath,
+          fileHeaders.toHashMap()
         )
 
         if (BuildConfig.DEBUG) {

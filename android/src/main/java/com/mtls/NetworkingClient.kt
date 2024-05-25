@@ -1,14 +1,21 @@
 package com.mtls
 
+import android.content.Context
+import android.util.Log
+import androidx.core.net.toUri
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.request.forms.formData
+import io.ktor.client.request.forms.submitFormWithBinaryData
 import io.ktor.client.request.headers
 import io.ktor.client.request.request
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
+import io.ktor.http.Headers
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.contentType
 import io.ktor.http.parameters
@@ -16,8 +23,9 @@ import io.ktor.http.path
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
 import okhttp3.OkHttpClient
+import java.io.ByteArrayOutputStream
+import java.io.IOException
 import java.io.InputStream
 import java.security.KeyFactory
 import java.security.KeyStore
@@ -32,6 +40,7 @@ import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
 
+
 val jsonInstance = Json {
   ignoreUnknownKeys = true
   explicitNulls = false
@@ -40,7 +49,8 @@ val jsonInstance = Json {
 class NetworkingClient(
   certificateInputStream: InputStream,
   certificatePrivateKey: String,
-  baseUrl: String
+  baseUrl: String,
+  val context: Context
 ) {
 
   private val okHttpClient: OkHttpClient
@@ -134,6 +144,63 @@ class NetworkingClient(
         path(path)
       }
     }
+  }
+
+  suspend fun multipart(
+    path: String,
+    headers: Map<String, Any> = emptyMap(),
+    params: Map<String, Any> = emptyMap(),
+    body: Map<String, Any> = emptyMap(),
+    fileName: String,
+    filePath: String,
+    fileHeaders: Map<String, Any> = emptyMap()
+  ): HttpResponse {
+    val h = Headers.build {
+      fileHeaders.forEach { (key, value) ->
+        append(key, value.toString())
+        append(HttpHeaders.ContentType, "image/jpeg")
+        append(HttpHeaders.ContentDisposition, "filename=image.png")
+      }
+    }
+
+    val iStream = context.contentResolver.openInputStream(filePath.toUri())!!
+    val inputData: ByteArray = getBytes(iStream)
+
+    iStream.close()
+    return client.submitFormWithBinaryData(
+      formData = formData {
+        append(fileName, inputData, h)
+        body.forEach { (key, value) ->
+          append(key, value.toString())
+        }
+      }) {
+      headers {
+        headers.forEach { (key, value) ->
+          append(key, value.toString())
+        }
+      }
+
+      parameters {
+        params.forEach { (key, value) ->
+          append(key, value.toString())
+        }
+      }
+      url {
+        path(path)
+      }
+    }
+  }
+
+  @Throws(IOException::class)
+  fun getBytes(inputStream: InputStream): ByteArray {
+    val byteBuffer = ByteArrayOutputStream()
+    val bufferSize = 1024
+    val buffer = ByteArray(bufferSize)
+    var len = 0
+    while (inputStream.read(buffer).also { len = it } != -1) {
+      byteBuffer.write(buffer, 0, len)
+    }
+    return byteBuffer.toByteArray()
   }
 
   companion object {
