@@ -2,8 +2,6 @@ package com.mtls
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
-import androidx.core.net.toUri
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
